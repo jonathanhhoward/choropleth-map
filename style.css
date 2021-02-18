@@ -12,3 +12,8 @@ html {
 body {
   background-color: #bcdeef;
 }
+
+.centered {
+  margin: 0 auto;
+  display: block;
+}

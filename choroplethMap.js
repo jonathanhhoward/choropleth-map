@@ -25,6 +25,8 @@ async function choroplethMap() {
     "https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/for_user_education.json",
   );
 
+  const width = 975;
+  const height = 610;
   const dataset = new Map(education.map(d => [d.fips, d.bachelorsOrHigher]));
   const educationDomain = d3.extent(education.map(d => d.bachelorsOrHigher));
   const colorScale = d3.scaleQuantize(educationDomain, d3.schemeBuGn[9]);
@@ -35,8 +37,9 @@ async function choroplethMap() {
   const stroke = "#555555";
 
   const svg = d3.select("#root").append("svg")
-    .attr("width", window.innerWidth)
-    .attr("height", window.innerHeight);
+    .attr("width", width)
+    .attr("height", height)
+    .attr("class", "centered");
 
   const map = svg.append("g");
 
