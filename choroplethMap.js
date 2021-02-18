@@ -2,7 +2,7 @@ choroplethMap().catch(console.error);
 
 async function choroplethMap() {
   /**
-   * topojson data
+   * topology data
    * @type {{
    *   objects: {
    *     counties: object,
