@@ -6,6 +6,7 @@ async function choroplethMap() {
    * @type {{
    *   objects: {
    *     counties: object,
+   *     states: object,
    *   },
    * }}
    */
@@ -26,7 +27,7 @@ async function choroplethMap() {
 
   const dataset = new Map(education.map(d => [d.fips, d.bachelorsOrHigher]));
   const educationDomain = d3.extent(education.map(d => d.bachelorsOrHigher));
-  const colorScale = d3.scaleQuantize(educationDomain, d3.schemePurples[9]);
+  const colorScale = d3.scaleQuantize(educationDomain, d3.schemeBuGn[9]);
 
   const svg = d3.select("#root").append("svg")
     .attr("width", window.innerWidth)
@@ -41,7 +42,14 @@ async function choroplethMap() {
     .attr("data-fips", d => d.id)
     .attr("data-education", d => dataset.get(d.id))
     .attr("fill", d => colorScale(dataset.get(d.id)))
-    .attr("stroke", "#333333")
-    .attr("stroke-width", "0.2")
+    .attr("stroke", "#ffffff")
+    .attr("stroke-width", "0.1")
+    .attr("d", d3.geoPath());
+
+  map.append("path")
+    .datum(topojson.mesh(us, us.objects.states, (a, b) => a !== b))
+    .attr("fill", "none")
+    .attr("stroke", "#000000")
+    .attr("stroke-width", "0.1")
     .attr("d", d3.geoPath());
 }
