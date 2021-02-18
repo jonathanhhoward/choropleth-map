@@ -30,9 +30,9 @@ async function choroplethMap() {
   const colorScale = d3.scaleQuantize(educationDomain, d3.schemeBuGn[9]);
   const path = d3.geoPath();
   const interiorBorders = (a, b) => (a !== b);
-  const countyStroke = "#ffffff";
-  const stateStroke = "#000000";
-  const strokeWidth = 0.1;
+  const countyStrokeWidth = 0.1;
+  const stateStrokeWidth = 0.25;
+  const stroke = "#555555";
 
   const svg = d3.select("#root").append("svg")
     .attr("width", window.innerWidth)
@@ -47,14 +47,19 @@ async function choroplethMap() {
     .attr("data-fips", d => d.id)
     .attr("data-education", d => dataset.get(d.id))
     .attr("fill", d => colorScale(dataset.get(d.id)))
-    .attr("stroke", countyStroke)
-    .attr("stroke-width", strokeWidth)
+    .attr("d", path);
+
+  map.append("path")
+    .datum(topojson.mesh(us, us.objects.counties, interiorBorders))
+    .attr("fill", "none")
+    .attr("stroke", stroke)
+    .attr("stroke-width", countyStrokeWidth)
     .attr("d", path);
 
   map.append("path")
     .datum(topojson.mesh(us, us.objects.states, interiorBorders))
     .attr("fill", "none")
-    .attr("stroke", stateStroke)
-    .attr("stroke-width", strokeWidth)
+    .attr("stroke", stroke)
+    .attr("stroke-width", stateStrokeWidth)
     .attr("d", path);
 }
