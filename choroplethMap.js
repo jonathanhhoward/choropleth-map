@@ -25,6 +25,8 @@ async function choroplethMap() {
   );
 
   const dataset = new Map(education.map(d => [d.fips, d.bachelorsOrHigher]));
+  const educationDomain = d3.extent(education.map(d => d.bachelorsOrHigher));
+  const colorScale = d3.scaleQuantize(educationDomain, d3.schemePurples[9]);
 
   const svg = d3.select("#root").append("svg")
     .attr("width", window.innerWidth)
@@ -38,7 +40,7 @@ async function choroplethMap() {
     .attr("class", "county")
     .attr("data-fips", d => d.id)
     .attr("data-education", d => dataset.get(d.id))
-    .attr("fill", "none")
+    .attr("fill", d => colorScale(dataset.get(d.id)))
     .attr("stroke", "#333333")
     .attr("stroke-width", "0.2")
     .attr("d", d3.geoPath());
