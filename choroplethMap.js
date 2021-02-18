@@ -14,6 +14,7 @@ async function choroplethMap() {
   map.selectAll("path")
     .data(topojson.feature(us, us.objects.counties).features)
     .join("path")
+    .attr("class", "county")
     .attr("fill", "none")
     .attr("stroke", "#333333")
     .attr("stroke-width", "0.2")
