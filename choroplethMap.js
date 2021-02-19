@@ -27,6 +27,7 @@ async function choroplethMap() {
 
   const width = 975;
   const height = 610;
+  const margin = { top: 100, right: 0, bottom: 0, left: 0 };
   const dataset = new Map(education.map(d => [d.fips, d.bachelorsOrHigher]));
   const educationDomain = d3.extent(education.map(d => d.bachelorsOrHigher));
   const colorScale = d3.scaleQuantize(educationDomain, d3.schemeBuGn[9]);
@@ -38,10 +39,31 @@ async function choroplethMap() {
 
   const svg = d3.select("#root").append("svg")
     .attr("width", width)
-    .attr("height", height)
+    .attr("height", height + margin.top)
     .attr("class", "centered");
 
-  const map = svg.append("g");
+  svg.selectAll("text")
+    .data([
+      {
+        id: "title",
+        text: "United States Educational Attainment",
+        y: margin.top * 0.5,
+      },
+      {
+        id: "description",
+        text: `Percentage of adults age 25 and older with a bachelor's degree or higher (2010-2014)`,
+        y: margin.top * 0.75,
+      },
+    ])
+    .enter()
+    .append("text")
+    .attr("id", d => d.id)
+    .attr("x", width * 0.5)
+    .attr("y", d => d.y)
+    .text(d => d.text);
+
+  const map = svg.append("g")
+    .attr("transform", `translate(0, ${margin.top})`);
 
   map.selectAll("path")
     .data(topojson.feature(us, us.objects.counties).features)
