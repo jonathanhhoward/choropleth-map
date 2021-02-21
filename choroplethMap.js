@@ -1,3 +1,8 @@
+import { Runtime } from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+import d3ColorLegend from "https://api.observablehq.com/@d3/color-legend.js?v=3";
+
+const colorLegendNotebook = new Runtime().module(d3ColorLegend);
+
 choroplethMap().catch(console.error);
 
 async function choroplethMap() {
@@ -29,7 +34,7 @@ async function choroplethMap() {
   const height = 610;
   const margin = { top: 100, right: 0, bottom: 0, left: 0 };
   const educationDomain = d3.extent(education.map(d => d.bachelorsOrHigher));
-  const colorScale = d3.scaleQuantize(educationDomain, d3.schemeBuGn[9]);
+  const color = d3.scaleQuantize(educationDomain, d3.schemeBuGn[9]);
 
   const svg = d3.select("#root").append("svg")
     .attr("width", width)
@@ -56,40 +61,24 @@ async function choroplethMap() {
     .attr("y", d => d.y)
     .text(d => d.text);
 
-  const legendWidth = 300;
-  const legendHeight = 8;
+  const legend = await colorLegendNotebook.value("legend");
 
-  const legend = svg.append("g")
-    .attr("id", "legend")
+  const legendWidth = 300;
+
+  svg.append("g")
     .attr(
       "transform",
       `translate(${(width / 2) - (legendWidth / 2)}, ${margin.top})`,
-    );
-
-  const legendData = colorScale.thresholds();
-
-  const legendScale = d3.scaleBand()
-    .domain(legendData)
-    .range([0, legendWidth]);
-
-  const legendAxis = d3.axisBottom(legendScale)
-    .tickFormat(d => `${d3.format(".1f")(d)}%`)
-    .tickSizeOuter(0);
-
-  legend.append("g")
-    .attr("transform", `translate(0, ${legendHeight})`)
-    .call(legendAxis)
-    .call(g => g.select(".domain").remove());
-
-  legend.selectAll("rect")
-    .data(legendData)
-    .enter()
-    .append("rect")
-    .attr("x", d => legendScale(d))
-    .attr("y", 0)
-    .attr("width", legendScale.bandwidth())
-    .attr("height", legendHeight)
-    .attr("fill", d => colorScale(d));
+    )
+    .attr("id", "legend")
+    .append(() => legend({
+      color,
+      title: "Bachelors Or Higher (%)",
+      width: legendWidth,
+      height: 42,
+      marginTop: 10,
+      tickFormat: d3.format(".0f"),
+    }));
 
   const dataset = new Map(education.map(d => [d.fips, d.bachelorsOrHigher]));
   const path = d3.geoPath();
@@ -107,7 +96,7 @@ async function choroplethMap() {
     .attr("class", "county")
     .attr("data-fips", d => d.id)
     .attr("data-education", d => dataset.get(d.id))
-    .attr("fill", d => colorScale(dataset.get(d.id)))
+    .attr("fill", d => color(dataset.get(d.id)))
     .attr("d", path);
 
   map.append("path")
