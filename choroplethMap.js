@@ -55,8 +55,7 @@ async function choroplethMap() {
         y: margin.top * 0.75,
       },
     ])
-    .enter()
-    .append("text")
+    .join("text")
     .attr("id", d => d.id)
     .attr("x", width * 0.5)
     .attr("y", d => d.y)
