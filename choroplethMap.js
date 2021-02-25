@@ -84,6 +84,14 @@ async function choroplethMap() {
     d.fips,
     d.bachelorsOrHigher,
   ]));
+  const countyName = new Map(education.map(d => [d.fips, d.area_name]));
+  const tooltip = tooltipFactory(
+    root,
+    "data-education",
+    d => educationLevel.get(d.id),
+    d => `${countyName.get(d.id)}<br>${(educationLevel.get(d.id))}%`,
+  );
+  tooltip().attr("id", "tooltip");
   const path = d3.geoPath();
   const interiorBorders = (a, b) => (a !== b);
   const stroke = "#555555";
@@ -99,8 +107,8 @@ async function choroplethMap() {
     .attr("data-education", d => educationLevel.get(d.id))
     .attr("fill", d => color(educationLevel.get(d.id)))
     .attr("d", path)
-    .on("mouseover", showTooltip)
-    .on("mouseout", hideTooltip);
+    .on("mouseover", tooltip.show)
+    .on("mouseout", tooltip.hide);
 
   map.append("path")
     .datum(topojson.mesh(us, us.objects.counties, interiorBorders))
@@ -116,20 +124,31 @@ async function choroplethMap() {
     .attr("stroke-width", 0.25)
     .attr("d", path);
 
-  const countyName = new Map(education.map(d => [d.fips, d.area_name]));
+  function tooltipFactory(
+    selection,
+    dataName,
+    dataValueFn,
+    htmlContentFn,
+    left = 20,
+    top = 20,
+  ) {
+    const div = selection.append("div")
+      .style("position", "absolute")
+      .style("z-index", 10)
+      .style("display", "none");
 
-  const tooltip = root.append("div")
-    .attr("id", "tooltip");
+    const tooltip = () => div;
 
-  function showTooltip(event, data) {
-    tooltip.attr("data-education", educationLevel.get(data.id))
-      .html(`${countyName.get(data.id)}<br>${(educationLevel.get(data.id))}%`)
-      .style("left", `${(event.pageX + 20)}px`)
-      .style("top", `${(event.pageY - 40)}px`)
-      .style("display", "block");
-  }
+    tooltip.show = (event, data) => {
+      div.attr(dataName, dataValueFn(data))
+        .html(htmlContentFn(data))
+        .style("left", `${(event.pageX + left)}px`)
+        .style("top", `${(event.pageY + top)}px`)
+        .style("display", "block");
+    };
 
-  function hideTooltip() {
-    tooltip.style("display", "none");
+    tooltip.hide = () => div.style("display", "none");
+
+    return tooltip;
   }
 }

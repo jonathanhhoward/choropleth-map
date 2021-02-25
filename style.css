@@ -37,13 +37,9 @@ body {
 }
 
 #tooltip {
-  position: absolute;
-  z-index: 10;
-  display: none;
   background-color: #333333;
   font-size: 0.8rem;
   color: #eeeeee;
-  max-width: 200px;
   border-radius: 4px;
   padding: 8px;
 }
