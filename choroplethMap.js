@@ -29,9 +29,9 @@ async function choroplethMap() {
     "https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/for_user_education.json",
   );
 
-  const width = 975;
-  const height = 610;
-  const margin = { top: 100, right: 0, bottom: 0, left: 0 };
+  const margin = { top: 100, right: 20, bottom: 20, left: 20 };
+  const width = 975 + margin.right + margin.left;
+  const height = 610 + margin.top + margin.bottom;
   const educationDomain = d3.extent(education.map(d => d.bachelorsOrHigher));
   const color = d3.scaleQuantize(educationDomain, d3.schemeBuGn[9]);
 
@@ -39,7 +39,7 @@ async function choroplethMap() {
 
   const svg = root.append("svg")
     .attr("width", width)
-    .attr("height", height + margin.top)
+    .attr("height", height)
     .attr("class", "centered");
 
   svg.selectAll("text")
@@ -97,7 +97,7 @@ async function choroplethMap() {
   const stroke = "#555555";
 
   const map = svg.append("g")
-    .attr("transform", `translate(0, ${margin.top})`);
+    .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
   map.selectAll("path")
     .data(topojson.feature(us, us.objects.counties).features)
