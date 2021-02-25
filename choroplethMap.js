@@ -9,6 +9,7 @@ async function choroplethMap() {
    * @type {{
    *   objects: {
    *     counties: object,
+   *     nation: object,
    *     states: object,
    *   },
    * }}
@@ -23,6 +24,7 @@ async function choroplethMap() {
    *   area_name: string,
    *   bachelorsOrHigher: number,
    *   fips: number,
+   *   state: string,
    * }]}
    */
   const education = await d3.json(
