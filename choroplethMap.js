@@ -4,41 +4,10 @@ import { Tooltip } from "./tooltip.js";
 choroplethMap(window.d3).catch(console.error);
 
 async function choroplethMap(d3) {
-  /**
-   * topology data
-   * @type {{
-   *   objects: {
-   *     counties: object,
-   *     nation: object,
-   *     states: object,
-   *   },
-   * }}
-   */
-  const us = await d3.json(
-    "https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/counties.json",
-  );
-
-  /**
-   * education data
-   * @type {[{
-   *   area_name: string,
-   *   bachelorsOrHigher: number,
-   *   fips: number,
-   *   state: string,
-   * }]}
-   */
-  const education = await d3.json(
-    "https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/for_user_education.json",
-  );
-
   const margin = { top: 100, right: 20, bottom: 20, left: 20 };
   const width = 975 + margin.right + margin.left;
   const height = 610 + margin.top + margin.bottom;
-  const educationDomain = d3.extent(education.map(d => d.bachelorsOrHigher));
-  const color = d3.scaleQuantize(educationDomain, d3.schemeBuGn[9]);
-
   const root = d3.select("#root");
-
   const svg = root.append("svg")
     .attr("width", width)
     .attr("height", height)
@@ -63,6 +32,11 @@ async function choroplethMap(d3) {
     .attr("y", d => d.y)
     .text(d => d.text);
 
+  const education = await d3.json(
+    "https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/for_user_education.json",
+  );
+  const educationDomain = d3.extent(education.map(d => d.bachelorsOrHigher));
+  const color = d3.scaleQuantize(educationDomain, d3.schemeBuGn[9]);
   const legend = await d3ColorLegend.value("legend");
   const legendWidth = 300;
 
@@ -91,6 +65,10 @@ async function choroplethMap(d3) {
     "data-education",
     d => educationLevel.get(d.id),
     d => `${countyName.get(d.id)}<br>${(educationLevel.get(d.id))}%`,
+  );
+
+  const us = await d3.json(
+    "https://cdn.freecodecamp.org/testable-projects-fcc/data/choropleth_map/counties.json",
   );
   const path = d3.geoPath();
   const interiorBorders = (a, b) => (a !== b);
