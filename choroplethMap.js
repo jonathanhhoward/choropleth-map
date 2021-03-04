@@ -1,4 +1,5 @@
 import { d3ColorLegend } from "./d3-color-legend.js";
+import { Tooltip } from "./tooltip.js";
 
 choroplethMap().catch(console.error);
 
@@ -85,13 +86,12 @@ async function choroplethMap() {
     d.bachelorsOrHigher,
   ]));
   const countyName = new Map(education.map(d => [d.fips, d.area_name]));
-  const tooltip = tooltipFactory(
+  const tooltip = new Tooltip(
     root,
     "data-education",
     d => educationLevel.get(d.id),
     d => `${countyName.get(d.id)}<br>${(educationLevel.get(d.id))}%`,
   );
-  tooltip().attr("id", "tooltip");
   const path = d3.geoPath();
   const interiorBorders = (a, b) => (a !== b);
   const stroke = "#555555";
@@ -123,32 +123,4 @@ async function choroplethMap() {
     .attr("stroke", stroke)
     .attr("stroke-width", 0.25)
     .attr("d", path);
-
-  function tooltipFactory(
-    selection,
-    dataName,
-    dataValueFn,
-    htmlContentFn,
-    left = 20,
-    top = 20,
-  ) {
-    const div = selection.append("div")
-      .style("position", "absolute")
-      .style("z-index", 10)
-      .style("display", "none");
-
-    const tooltip = () => div;
-
-    tooltip.show = (event, data) => {
-      div.attr(dataName, dataValueFn(data))
-        .html(htmlContentFn(data))
-        .style("left", `${(event.pageX + left)}px`)
-        .style("top", `${(event.pageY + top)}px`)
-        .style("display", "block");
-    };
-
-    tooltip.hide = () => div.style("display", "none");
-
-    return tooltip;
-  }
 }
