@@ -5,12 +5,12 @@ choroplethMap(window.d3).catch(console.error);
 
 async function choroplethMap(d3) {
   const margin = { top: 100, right: 20, bottom: 20, left: 20 };
-  const width = 975 + margin.right + margin.left;
-  const height = 610 + margin.top + margin.bottom;
+  const width = 975;
+  const height = 610;
   const root = d3.select("#root");
   const svg = root.append("svg")
-    .attr("width", width)
-    .attr("height", height)
+    .attr("width", width + margin.right + margin.left)
+    .attr("height", height + margin.top + margin.bottom)
     .attr("class", "centered");
 
   svg.selectAll("text")
@@ -28,7 +28,7 @@ async function choroplethMap(d3) {
     ])
     .join("text")
     .attr("id", d => d.id)
-    .attr("x", width * 0.5)
+    .attr("x", svg.attr("width") * 0.5)
     .attr("y", d => d.y)
     .text(d => d.text);
 
@@ -43,7 +43,10 @@ async function choroplethMap(d3) {
   svg.append("g")
     .attr(
       "transform",
-      `translate(${(width / 2) - (legendWidth / 2)}, ${margin.top})`,
+      `translate(
+        ${(svg.attr("width") / 2) - (legendWidth / 2)},
+        ${margin.top}
+      )`,
     )
     .attr("id", "legend")
     .append(() => legend({
