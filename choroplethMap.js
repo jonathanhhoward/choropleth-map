@@ -1,5 +1,4 @@
-import { Runtime } from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-import d3ColorLegend from "https://api.observablehq.com/@d3/color-legend.js?v=3";
+import { d3ColorLegend } from "./d3-color-legend.js";
 
 choroplethMap().catch(console.error);
 
@@ -63,8 +62,7 @@ async function choroplethMap() {
     .attr("y", d => d.y)
     .text(d => d.text);
 
-  const colorLegendNotebook = new Runtime().module(d3ColorLegend);
-  const legend = await colorLegendNotebook.value("legend");
+  const legend = await d3ColorLegend.value("legend");
   const legendWidth = 300;
 
   svg.append("g")
