@@ -1,9 +1,9 @@
 import { d3ColorLegend } from "./d3-color-legend.js";
 import { Tooltip } from "./tooltip.js";
 
-choroplethMap().catch(console.error);
+choroplethMap(window.d3).catch(console.error);
 
-async function choroplethMap() {
+async function choroplethMap(d3) {
   /**
    * topology data
    * @type {{
